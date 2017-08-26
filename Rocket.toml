@@ -1,0 +1,3 @@
+[development]
+# spells 'rust' on a keypad. this is important.
+port = 7878
