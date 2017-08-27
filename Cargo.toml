@@ -5,6 +5,7 @@ authors = ["tronje <hi@tron.je>"]
 
 [dependencies]
 time = "0.1"
+regex = "0.2"
 rocket = "0.3"
 rocket_codegen = "0.3"
 rocket_contrib = "0.3"

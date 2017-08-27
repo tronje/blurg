@@ -3,6 +3,7 @@
 
 
 extern crate time;
+extern crate regex;
 extern crate rocket;
 extern crate rocket_contrib;
 extern crate serde;
@@ -11,15 +12,16 @@ extern crate serde_json;
 
 
 mod post;
+use post::{Post, PostMeta};
 
 
 use std::io;
 use std::path::{Path, PathBuf};
+
+use regex::Regex;
+
 use rocket::response::NamedFile;
 use rocket_contrib::Json;
-
-
-use post::{Post, PostMeta};
 
 
 #[get("/")]
@@ -28,9 +30,19 @@ fn index() -> io::Result<NamedFile> {
 }
 
 
+/// Serve any html, js and css files in www/ or any subdir of www/
 #[get("/<file..>", rank = 5)]
 fn files(file: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new("www/").join(file)).ok()
+    // regex matching `*.html`, `*.css` and `*.js`
+    let valid_file = Regex::new(r"^*\.[html|css|js]").unwrap();
+
+    if valid_file.is_match(file.to_str().unwrap()) {
+        // if the request is for a file we want to serve, serve that file
+        NamedFile::open(Path::new("www/").join(file)).ok()
+    } else {
+        // otherwise return `None`, generating a 404
+        None
+    }
 }
 
 
